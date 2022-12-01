@@ -2,28 +2,32 @@ version: '3'
 
 services:
   master:
-    image: chrislusf/seaweedfs:dev # use a remote dev image
+    image: chrislusf/seaweedfs # use a remote dev image
     command: "master -ip=master"
   volume:
-    image: chrislusf/seaweedfs:dev # use a remote dev image
+    image: chrislusf/seaweedfs # use a remote dev image
     command: 'volume -mserver="master:9333" -port=8080 -ip=volume'
     depends_on:
       - master
   filer:
-    image: chrislusf/seaweedfs:dev # use a remote dev image
+    image: chrislusf/seaweedfs # use a remote dev image
     command: 'filer -master="master:9333"'
     depends_on:
       - master
       - volume
   s3:
-    image: chrislusf/seaweedfs:dev # use a remote dev image
-    command: 's3 -filer="filer:8888"'
+    image: chrislusf/seaweedfs # use a remote dev image
+    command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327 -port=8333 -config="/data/s3_config.json" '
+    ports:
+      - 8333:8333
+    volumes: 
+      - "./config:/data"
     depends_on:
       - master
       - volume
       - filer
   webdav:
-    image: chrislusf/seaweedfs:dev # use a remote dev image
+    image: chrislusf/seaweedfs # use a remote dev image
     command: 'webdav -filer="filer:8888"'
     depends_on:
       - master
