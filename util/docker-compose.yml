@@ -7,6 +7,8 @@ services:
   volume:
     image: chrislusf/seaweedfs # use a remote dev image
     command: 'volume -mserver="master:9333" -port=8080 -ip=volume'
+    volumes: 
+      - "./data:/data"
     depends_on:
       - master
   filer:
